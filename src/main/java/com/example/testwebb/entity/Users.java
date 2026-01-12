@@ -1,0 +1,31 @@
+package com.example.testwebb.entity;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class Users {
+
+    private Long id;
+    private String name;
+    private String step;
+    private int score;    //! tuplangam yulduzchalar
+    private int answers;
+    private int fight;    //! qilgan janglari soni
+    private int cont=0;     //! suzlar tartibi
+    private List<String> answer=new ArrayList<>();
+
+
+
+
+}
