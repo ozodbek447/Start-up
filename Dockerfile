@@ -1,14 +1,21 @@
-# 1. Base image sifatida OpenJDK 17
-FROM eclipse-temurin:17-jdk-alpine
-
-# 2. Ishchi direktoriyani yaratish va unga o'tish
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# 3. Maven loyihani build qilish uchun jar faylni konteynerga ko'chirish
-COPY target/testWEbb-0.0.1-SNAPSHOT.jar app.jar
+# pom.xml ni alohida copy qilish (cache uchun)
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# 4. Portni ochish (Spring Boot default 8080)
+# source code
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# 2-bosqich: run
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+
+# jar faylni build bosqichidan olish
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# 5. Ilovani ishga tushirish
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
