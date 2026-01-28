@@ -1,10 +1,15 @@
 package com.example.testwebb.server;
 
 import com.example.testwebb.data.DataBase;
+import com.example.testwebb.entity.Users;
 import com.example.testwebb.entity.Word;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +19,8 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class WordService {
 
+
+    private final Gson gson;
 
     public List<Word> getWords(List<Word> words) {
         Random random = new Random();
@@ -28,7 +35,7 @@ public class WordService {
 
     public List<Word> getWord(Word correctWord) {
         Random random = new Random();
-        List<Word> allWords = Server.words();
+        List<Word> allWords = words();
 
         Word wrongWord;
         do {
@@ -41,6 +48,17 @@ public class WordService {
 
         Collections.shuffle(result); // ARALASHTIRISH 🔀
         return result;
+    }
+
+    public   List<Word> words() {
+        try (InputStreamReader reader = new InputStreamReader(
+                getClass().getResourceAsStream("/templates/word.json") // classpath ichidan oladi
+        )) {
+            Type type = new TypeToken<List<Word>>(){}.getType();
+            return gson.fromJson(reader, type);
+        } catch (Exception e) {
+            return new ArrayList<>(); // fayl bo‘lmasa bo‘sh list
+        }
     }
 
 }

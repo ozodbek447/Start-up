@@ -74,7 +74,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                return;
            }
            if(!usersWords.containsKey(user.getId())){
-               List<Word> words = wordService.getWords(Server.words());
+               List<Word> words = wordService.getWords(wordService.words());
                usersWords.put(user.getId(),words);
            }
            if(user.getStep() == null){

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +39,5 @@ public class Server {
         }
     }
 
-    public static List<Word> words() {
-        try (FileReader reader = new FileReader("data/word.json")) {
-            Type type = new TypeToken<List<Word>>(){}.getType();
-            return new Gson().fromJson(reader, type);
-        } catch (Exception e) {
-            return new ArrayList<>(); // fayl bo‘lmasa bo‘sh list
-        }
 
-    }
 }
