@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class Aasdfghgfds {
     @GetMapping("/admin")
     public String admin() {
-        return "main";
+        return "index";
     }
 }
