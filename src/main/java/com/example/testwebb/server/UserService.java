@@ -29,7 +29,11 @@ public class UserService {
         List<Users> list = dataBase.users.stream().sorted(Comparator.comparingInt(Users::getScore)).toList();
 
         return list.indexOf(user)+1;
+    }
 
-
+    public String toString(Users user) {
+        return "Ism:  "+user.getName()+"\n" +
+                "Toplagan ball: "+user.getScore()+"\n" +
+                "Darajasi :"+getUser(user)+"\n";
     }
 }

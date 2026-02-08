@@ -40,130 +40,120 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
 
-
-        if (!update.hasMessage()) return;
-       if (update.hasMessage()){
+        if (update.hasMessage()){
 
 
-           Message message = update.getMessage();
-           Long chatId = message.getChat().getId();
-           String text = message.getText();
-           Users user = userService.getUserId(chatId);
+            Message message = update.getMessage();
+            Long chatId = message.getChat().getId();
+            String text = message.getText();
+            Users user = userService.getUserId(chatId);
 
-           //! yangi foydalanuvchi ruyhatdan tishi
-           if (user==null){
-               sendMessage("Salom bottimizga xush kelibsiz\n Hayotingizdagi yana bir tug'ri tanlovni" +
-                       " amalga oshirish uchun iltimos ruyhatdan o'ting.Username kiriting ",chatId);
+            //! yangi foydalanuvchi ruyhatdan tishi
+            if (user==null){
+                sendMessage("Salom bottimizga xush kelibsiz\n Hayotingizdagi yana bir tug'ri tanlovni" +
+                        " amalga oshirish uchun iltimos ruyhatdan o'ting.Username kiriting ",chatId);
 
-               Users users=new Users();
-               users.setStep("ism");
-               users.setId(chatId);
-               dataBase.users.add(users);
-               return;
-           }
+                Users users=new Users();
+                users.setStep("ism");
+                users.setId(chatId);
 
-           //! foydalanubvchi ismini olish
-           if (user.getStep().equals("ism")){
-               user.setName(text);
-               user.setStep("menu");
-               dataBase.users.remove(user);
-               dataBase.users.add(user);
-               boshlash(user.getId(),"Qoyil siz ruyhatdan utishni tugatdingiz .\n" +
-                       "Buni 50% insonlar qila olmaydi .menu dagi battinlardan birini tanla");
-
-               return;
-           }
-           if(!usersWords.containsKey(user.getId())){
-               List<Word> words = wordService.getWords(wordService.words());
-               usersWords.put(user.getId(),words);
-           }
-           if(user.getStep() == null){
-               user.setStep("menu");
-               dataBase.users.remove(user);
-               dataBase.users.add(user);
-
-           }
-
-           if ( text.startsWith("AI bilan jang")) {
-               user.setStep("0");
-               user.setAnswers(0);
-               user.setFight(user.getFight()+1);
-               wordBatting(usersWords.get(user.getId()).get(0),user.getId());
-               dataBase.users.remove(user);
-               dataBase.users.add(user);
-               return;
-           }
-
-           if (user.getStep().matches("\\d+")) {
-               int index = Integer.parseInt(user.getStep());
-               Word currentWord = usersWords.get(user.getId()).get(index);
-
-               if (currentWord.getTranslation().equalsIgnoreCase(text)) {
-                   user.setAnswers(user.getAnswers() + 1);
-                   user.getAnswer().add(text);
-                   dataBase.users.remove(user);
-                   dataBase.users.add(user);
-               }else {
-                   user.getAnswer().add(text);
-                   dataBase.users.remove(user);
-                   dataBase.users.add(user);
-               }
-
-               index++;
-
-               if (index < 10) {
-                   user.setStep(String.valueOf(index));
-                   wordBatting(usersWords.get(user.getId()).get(index),user.getId());
-                   dataBase.users.remove(user);
-                   dataBase.users.add(user);
-               } else {
-
-                   user.setStep("menu");
-                   user.setScore(user.getScore() + user.getAnswers());
+                dataBase.users.add(users);
+                return;
+            }
 
 
-                   sendMessage(
-                           toStringg(usersWords.get(user.getId()),user),
-                           chatId);
-                   usersWords.remove(user.getId());
-                   dataBase.users.remove(user);
-                   dataBase.users.add(user);
-                   return;
-               }
-           }
-           if (text.equals("orqaga1")) {
-               boshlash(user.getId(),"Tanla aql👇");
+            //! foydalanubvchi ismini olish
+            if (user.getStep().equals("ism")){
+                user.setName(text);
+                user.setStep("menu");
+                boshlash(user.getId(), """
+                       Qoyil siz ruyhatdan utishni tugatdingiz .\n 
+                       Buni 50% insonlar qila olmaydi .Sizning IQ darajangiz 70 dan baland.\n
+                       menu dagi battinlardan birini tanla.Eslatma malumotlar bir kunga saqlanadi
+                       """);
+                return;
+            }
+            if (user.getStep().equals("answer")){
+                if (dataBase.userWords.get(chatId).get(user.getCont()).getTrueAns().equals(text)){
+                    sendMessage(dataBase.userWords.get(chatId).get(user.getCont()).getText()+"-"+text+"✅",chatId);
+                    user.setScore(user.getScore()+1);
+                    user.setAnswers(user.getAnswers()+1);
+                }else {
+                    sendMessage(dataBase.userWords.get(chatId).get(user.getCont()).getText()+"-"+text+"❌",chatId);
+                }
+                user.setScore(user.getScore()+1);
+                user.setCont(user.getCont()+1);
+                user.getAnswer().add(text);
+                if (user.getCont()==10){
+                    if(user.getAnswers()<=3){
+                        sendMessage("""
+                               🤖 Savollar juda oson edi-ku…
+                               😅 Hatto bot ham hayron qolmoqda
+                               📊 Sen esa atigi *2 ta* to‘g‘ri topding
+                               😳 Rostdan ham shunaqami?
+                               Hamma kamida *5 ta* topyapti-ku
+                               ━━━━━━━━━━ 🔥 Maslahat 🔥 ━━━━━━━━━━
+                               📚 Savollarni diqqat bilan o‘qi
+                               🧠 Shoshilmay javob ber
+                               💪 Keyingi safar rekord qil!
+                               😎 Bot senga ishonadi…
+                               lekin hozircha ozgina mashq kerak shekilli 🙂
+                               Ammo buni senga foydasi yuq chunki sen yutqazding....
+                               
+                               """,chatId);
+                    }
+                    sendMessage(userService.toString(user),chatId);
+                    boshlash(chatId,"Tanla aqlli" );
+                    dataBase.userWords.clear();
 
-               dataBase.users.remove(user);
-               dataBase.users.add(user);
-               return;
+                }else {
+                    wordBatting(dataBase.userWords.get(chatId).get(user.getCont()),chatId);
 
-           }
-           if (text.equals("mening malumotlarim1")) {
-               sendMessage("👨‍🎓Foydalanuvchi: "+user.getName()+
-                       "\n🌟Umumiy ball: "+user.getScore()+
-                       "\n⚔Umumiy janglar soni: "+user.getFight()+
-                       "\n📋Dataja:"+userService.getUser(user),user.getId());
-               user.setStep("menu");
-               dataBase.users.remove(user);
-               dataBase.users.add(user);
-               return;
-           }
-           //! jangni boshlash
-           if (user.getStep().equals("menu")){
-               boshlash(user.getId(),"Tanla aql👇");
+                }
+                return;
 
-               dataBase.users.remove(user);
-               dataBase.users.add(user);
+            }
 
-               return;
+            if (text.equals("orqaga")){
+                user.setStep("menu");
+                return;
+            }
+            if(text.equals("Ingiliz_tili")){
+                dataBase.userWords.put(chatId,wordService.getWords(wordService.words()));
+                wordBatting(dataBase.userWords.get(chatId).get(user.getCont()),chatId);
+                user.setStep("answer");
 
-           }
+                return;
+            }
+            if(text.equals("Tarix_Savollar")){
+                dataBase.userWords.put(chatId,wordService.getWords(wordService.wordTarix()));
+                wordBatting(dataBase.userWords.get(chatId).get(user.getCont()),chatId);
+                user.setStep("answer");
+
+                return;
+            }
+
+
+            if(text.equals("AI bilan jang")){
+                language(chatId,"Qaysi qurolda jang qilasan");
+                return;
+            }
+            if (text.equals("mening malumotlarim1")){
+                sendMessage(userService.toString(user),chatId);
+                return;
+            }
+            if(user.getStep().equals("menu")){
+                boshlash(chatId,"Tanla aqlli" );
+                return;
+            }
 
 
 
 
-       }
+
+
+
+        }
 
 
 
@@ -213,9 +203,44 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             throw new RuntimeException(e);
         }
     }
+
+    private void language(Long chatId,String text) {
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+
+
+        KeyboardRow row = new KeyboardRow();
+        row.add("Ingiliz_tili");
+        keyboard.add(row);
+
+        KeyboardRow row12 = new KeyboardRow();
+        row12.add("Tarix_Savollar");
+        keyboard.add(row12);
+
+        KeyboardRow row11 = new KeyboardRow();
+        row11.add("menu");
+        keyboard.add(row11);
+
+        replyKeyboardMarkup.setKeyboard(keyboard);
+
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(text);
+        message.setReplyMarkup(replyKeyboardMarkup);
+
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private void wordBatting(Word word, Long chatId) {
 
-        List<Word> variants = wordService.getWord(word);
+
 
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
@@ -224,9 +249,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        for (Word w : variants) {
-            row.add(w.getTranslation());
+        for (String answer : word.getAnswers()) {
+            row.add(answer);
         }
+
         keyboard.add(row);
 
         replyKeyboardMarkup.setKeyboard(keyboard);
@@ -243,33 +269,35 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    public String toStringg(List<Word> words,Users users) {
-        String text = "";
+//    public String toStringg(List<Word> words,Users users) {
+//        String text = "";
+//
+//        text="👨‍🎓Foydalanuvchi: "+users.getName()+
+//           "\n🌟Umumiy ball: "+users.getScore()+
+//           "\n⚔Umumiy janglar soni: "+users.getFight()+
+//           "\n📋Dataja:"+userService.getUser(users)+"\n"+"\n"+"Suzlaringiz\n\n";
+//        int i=0;
+//        for (Word w : words) {
+//            if (users.getAnswer().get(i).equals(w.getTranslation())){
+//                text=text+w.getText()+" = "+users.getAnswer().get(i)+" ✅\n";
+//
+//            }else {
+//                text=text+w.getText()+" = "+users.getAnswer().get(i)+" ❌\n";
+//            }
+//            i++;
+//        }
+//        users.getAnswer().clear();
+//        dataBase.users.remove(users);
+//        dataBase.users.add(users);
+//
+//
+//
+//        return text+"\nXohlagan harfni bossang menuga tushasan";
+//
+//
+//    }
 
-        text="👨‍🎓Foydalanuvchi: "+users.getName()+
-           "\n🌟Umumiy ball: "+users.getScore()+
-           "\n⚔Umumiy janglar soni: "+users.getFight()+
-           "\n📋Dataja:"+userService.getUser(users)+"\n"+"\n"+"Suzlaringiz\n\n";
-        int i=0;
-        for (Word w : words) {
-            if (users.getAnswer().get(i).equals(w.getTranslation())){
-                text=text+w.getText()+" = "+users.getAnswer().get(i)+" ✅\n";
 
-            }else {
-                text=text+w.getText()+" = "+users.getAnswer().get(i)+" ❌\n";
-            }
-            i++;
-        }
-        users.getAnswer().clear();
-        dataBase.users.remove(users);
-        dataBase.users.add(users);
-
-
-
-        return text+"\nXohlagan harfni bossang menuga tushasan";
-
-
-    }
 
 
 

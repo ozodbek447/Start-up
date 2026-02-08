@@ -23,13 +23,18 @@ public class WordService {
     private final Gson gson;
 
     public List<Word> getWords(List<Word> words) {
-        Random random = new Random();
-        List<Word> result = new ArrayList<>();
+        try {
+            Random random = new Random();
+            List<Word> result = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
-            result.add(words.get(random.nextInt(words.size())));
+            for (int i = 0; i < 10; i++) {
+                result.add(words.get(random.nextInt(words.size())));
+            }
+            return result;
+        } catch (Exception e) {
+            return Collections.emptyList();
         }
-        return result;
+
 
     }
 
@@ -53,6 +58,16 @@ public class WordService {
     public   List<Word> words() {
         try (InputStreamReader reader = new InputStreamReader(
                 getClass().getResourceAsStream("/templates/word.json") // classpath ichidan oladi
+        )) {
+            Type type = new TypeToken<List<Word>>(){}.getType();
+            return gson.fromJson(reader, type);
+        } catch (Exception e) {
+            return new ArrayList<>(); // fayl bo‘lmasa bo‘sh list
+        }
+    }
+    public   List<Word> wordTarix() {
+        try (InputStreamReader reader = new InputStreamReader(
+                getClass().getResourceAsStream("/templates/tarix.json") // classpath ichidan oladi
         )) {
             Type type = new TypeToken<List<Word>>(){}.getType();
             return gson.fromJson(reader, type);
