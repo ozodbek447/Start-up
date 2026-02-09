@@ -3,7 +3,6 @@ package com.example.testwebb;
 import com.example.testwebb.data.DataBase;
 import com.example.testwebb.entity.Users;
 import com.example.testwebb.entity.Word;
-import com.example.testwebb.server.Server;
 import com.example.testwebb.server.UserService;
 import com.example.testwebb.server.WordService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     String token;
 
 //    private Long adminId=1817365313L;
-    private Map<Long, List<Word>> usersWords = new HashMap<>();
 
 
 
@@ -104,18 +102,24 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     }
                     sendMessage(userService.toString(user),chatId);
                     boshlash(chatId,"Tanla aqlli" );
-                    dataBase.userWords.clear();
+                    dataBase.userWords.remove(chatId);
+                    user.setStep("menu");
+                    user.setCont(0);
+
+
 
                 }else {
                     wordBatting(dataBase.userWords.get(chatId).get(user.getCont()),chatId);
 
                 }
+
                 return;
 
             }
 
             if (text.equals("orqaga")){
                 user.setStep("menu");
+                dataBase.userWords.remove(chatId);
                 return;
             }
             if(text.equals("Ingiliz_tili")){
