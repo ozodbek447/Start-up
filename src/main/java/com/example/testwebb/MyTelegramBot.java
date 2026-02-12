@@ -162,7 +162,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
 
     }
-    private void  sendMessage(String text ,Long chatId){
+    public void  sendMessage(String text ,Long chatId){
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(text);
