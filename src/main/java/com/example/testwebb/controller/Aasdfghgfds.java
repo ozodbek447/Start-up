@@ -21,7 +21,7 @@ public class Aasdfghgfds {
 
     @GetMapping("/admin")
     public String admin() {
-        return "/index";
+        return "index";
     }
 
     @PostMapping("/register")
