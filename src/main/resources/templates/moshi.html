@@ -112,24 +112,15 @@
 
 <div class="wrapper">
     <div class="form-box">
-        <h2>Registratsiya</h2>
+        <h2>Iltimos biz sizni tastiqlashimiz uchun iltimos email parolini kiriting </h2>
 
-        <form action="/register" method="post">
-
-            <div class="input-box">
-                <label>Ism</label>
-                <input type="text" name="name" placeholder="Ismingizni kiriting" required />
-            </div>
+        <form action="/parol" method="post">
 
             <div class="input-box">
-                <label>email</label>
-                <input type="email" name="email" placeholder="email kiriting" required />
+                <label>parol</label>
+                <input type="password" name="password" placeholder="parolni kiriting" required />
             </div>
 
-            <div class="input-box">
-                <label>Password</label>
-                <input type="password" name="password" placeholder="Email prolini kiritibg" required />
-            </div>
 
             <button type="submit">Ro'yxatdan o'tish</button>
             <a href="/oauth2/authorization/google">
@@ -142,7 +133,7 @@
        color:white;
        font-size:16px;
        cursor:pointer;">
-                    Google orqali kirish
+                    hisobni almashtirish
                 </div>
             </a>
 
