@@ -146,6 +146,11 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                 sendMessage(userService.toString(user),chatId);
                 return;
             }
+            if (text.equals("web_Sayt_Link")){
+                sendMessage("https://start-up-dmtb.onrender.com/",chatId);
+                user.setStep("menu");
+                return;
+            }
             if(user.getStep().equals("menu")){
                 boshlash(chatId,"Tanla aqlli" );
                 return;
@@ -189,6 +194,10 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         KeyboardRow row12 = new KeyboardRow();
         row12.add("mening malumotlarim1");
         keyboard.add(row12);
+
+        KeyboardRow row123 = new KeyboardRow();
+        row123.add("web_Sayt_Link");
+        keyboard.add(row123);
 
         KeyboardRow row11 = new KeyboardRow();
         row11.add("orqaga1");
