@@ -23,6 +23,10 @@ public class Aasdfghgfds {
     public String admin() {
         return "index";
     }
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
 
     @PostMapping("/register")
     public String post(@RequestParam String name, @RequestParam String email,

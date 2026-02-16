@@ -15,14 +15,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/admin",
-                                "/",
-                                "/register",
-                                "/css/**",
-                                "/js/**"
-                        ).permitAll()   // login shart emas
-                        .anyRequest().authenticated() // qolganlari login
+                        .requestMatchers("/", "/admin", "/register",
+                                "/css/**", "/js/**", "/images/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
                         .defaultSuccessUrl("/kabinet", true)
