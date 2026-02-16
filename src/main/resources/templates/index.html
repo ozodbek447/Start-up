@@ -154,12 +154,15 @@
 </div>
 
 <script>
-    let ua = navigator.userAgent || navigator.vendor || window.opera;
+    let ua = navigator.userAgent || "";
 
     if (ua.includes("Telegram") || ua.includes("Instagram")) {
-        window.location.href = "https://start-up-dmtb.onrender.com/admin";
+        window.location.replace(
+            "intent://start-up-dmtb.onrender.com/admin#Intent;scheme=https;package=com.android.chrome;end"
+        );
     }
 </script>
+
 
 </body>
 </html>
